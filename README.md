@@ -2,7 +2,7 @@
 
 ## About
 
-A machine learning framework (NIS+) infers multiscale causal variables, dymamics and information integration mode from cellular-resolution imaging in mouse cortex  across awake, anesthesia, and recovery stages, revealing a top-level "conscious variable" with high emergent complexity that links neural activity to conscious states across scales.
+A machine learning framework (NIS+) infers multiscale causal variables, dymamics and information integration mode from cellular-resolution imaging in mouse cortex  across awake, anesthetized, and recovery stages, revealing a top-level "conscious variable" with high emergent complexity that links neural activity to conscious states across scales.
 
 For more details, please refer the following paper:
 > Zhipeng Wang, Yingqi Rong, Kaiwei Liu, Mingzhe Yang, Jiang Zhang, Jing He: Causal Emergence of Consciousness through Learned Multiscale Neural Dynamics in Mice. https://arxiv.org/abs/2509.10891
