@@ -7,8 +7,8 @@ import torch
 from torch import nn
 from torch import distributions
 from torch.nn.parameter import Parameter
-from src.models import InvertibleNN,Parellel_Renorm_Dynamic
-from src.models import train_and_memorize,read_and_visulize
+# import models
+from src.models import InvertibleNN, Parellel_Renorm_Dynamic, train_and_memorize
 from src.EI_calculation import approx_ei
 from tqdm import tqdm
 from sklearn.neighbors import KernelDensity
@@ -16,6 +16,7 @@ from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 import numpy as np
 import matplotlib.pyplot as plt
+#Whether to use cuda or not
 import argparse
 parser = argparse.ArgumentParser(description='Causal Emergence of Mice')
 # general settings
@@ -45,9 +46,9 @@ train_target_list = np.concatenate(np.array(train_target_list),axis=0)
 test_input_list = np.concatenate(np.array(test_input_list),axis=0)
 test_target_list = np.concatenate(np.array(test_target_list),axis=0)
 
-train_input_data = torch.tensor(train_input_list, dtype=torch.float32) 
-train_target_data = torch.tensor(train_target_list, dtype=torch.float32) 
-test_input_data = torch.tensor(test_input_list, dtype=torch.float32) 
-test_target_data = torch.tensor(test_target_list, dtype=torch.float32) 
+train_input_data = torch.tensor(train_input_list, dtype=torch.float32) # [1,1000,64]
+train_target_data = torch.tensor(train_target_list, dtype=torch.float32) # [1,1000,64]
+test_input_data = torch.tensor(test_input_list, dtype=torch.float32) # [1,1000,64]
+test_target_data = torch.tensor(test_target_list, dtype=torch.float32) # [1,1000,64]
 
-EIs,CEs=train_and_memorize(train_input_data,train_target_data,test_input_data,test_target_data, args.weight_id, args.folder_name,args.mice_id,args.stage,'k-means',device=device, epoches=args.epoch,hidden_units=100,scale=1,batch_size=512,version=args.version)
+EIs,CEs=train_and_memorize(train_input_data,train_target_data,test_input_data,test_target_data, args.weight_id, args.folder_name,args.mice_id,args.stage,'k-means',device=device, epoches=args.epoch,hidden_units=100,scale=100,batch_size=512,version=args.version)
