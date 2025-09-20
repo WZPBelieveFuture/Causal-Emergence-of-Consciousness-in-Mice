@@ -17,14 +17,12 @@ from sklearn.preprocessing import StandardScaler
 class InvertibleNN(nn.Module):
     def __init__(self, nets, nett, mask, device):
         super(InvertibleNN, self).__init__()
-
         self.device = device
         self.mask = nn.Parameter(mask, requires_grad=False)
         length = mask.size()[0] // 2
         self.t = torch.nn.ModuleList([nett() for _ in range(length)])
         self.s = torch.nn.ModuleList([nets() for _ in range(length)])
         self.size = mask.size()[1]
-
     def g(self, z):
         x = z
         log_det_J = x.new_zeros(x.shape[0], device=self.device)
@@ -65,28 +63,31 @@ class Parellel_Renorm_Dynamic(nn.Module):
             input_size = max(latent_size, i)
             if i == sym_size:
                 mid_size = sym_size
+                if mid_size % 2 == 1:
+                    mid_size = mid_size - 1
                 dynamics = self.build_dynamics(mid_size, hidden_units)
                 dynamics_modules.append(dynamics)
                 inverse_dynamics = self.build_dynamics(mid_size, hidden_units)
                 inverse_dynamics_modules.append(inverse_dynamics)
-                flow = self.build_flow(input_size, hidden_units)
+                flow = self.build_flow(mid_size, hidden_units)
                 flows.append(flow)
             
-            flow = self.build_flow(input_size, hidden_units)
+            flow = self.build_flow(mid_size, hidden_units)
             flows.append(flow)
             mid_size = max(latent_size, int(i // cut_size))
+
             dynamics = self.build_dynamics(mid_size, hidden_units)
             dynamics_modules.append(dynamics)
             inverse_dynamics = self.build_dynamics(mid_size, hidden_units)
             inverse_dynamics_modules.append(inverse_dynamics)
-            i = int(i // cut_size)
+            if mid_size % 2 == 1:
+                mid_size = mid_size - 1
+            i = mid_size
 
-        #Build the decoding
         self.flows = nn.ModuleList(flows)
         self.dynamics_modules = nn.ModuleList(dynamics_modules)
         self.inverse_dynamics_modules = nn.ModuleList(inverse_dynamics_modules)
         
-        #see whether we need to normalize and is random
         self.normalized_state=normalized_state
         self.is_random = is_random
 
@@ -99,7 +100,7 @@ class Parellel_Renorm_Dynamic(nn.Module):
         nett = lambda: nn.Sequential(nn.Linear(input_size, hidden_units), nn.LeakyReLU(), 
                                      nn.Linear(hidden_units, hidden_units), nn.LeakyReLU(), 
                                      nn.Linear(hidden_units, input_size))
-        
+
         #Make masks
         mask1 = torch.cat((torch.zeros(1, input_size // 2, device=self.device), 
                            torch.ones(1, input_size // 2, device=self.device)), 1)
@@ -119,7 +120,7 @@ class Parellel_Renorm_Dynamic(nn.Module):
         return dynamics
     
     def forward(self, x, delay=1):
-        if len(x.size())<=1:
+        if len(x.size()) <= 1:
             x = x.unsqueeze(0)
         ss = self.encoding(x)
         s_nexts = []
@@ -130,15 +131,17 @@ class Parellel_Renorm_Dynamic(nn.Module):
                 s=s_next
             if self.normalized_state:
                 s_next = torch.tanh(s_next)
+            if self.is_random:
+                s_next = s_next + torch.relu(self.sigmas.repeat(s_next.size()[0],1)) * torch.randn(s_next.size(), device=self.device)
             y = self.decoding(s_next, i)
             s_nexts.append(s_next)
             ys.append(y)
         return ys, ss, s_nexts
-
+    
     def train_forward(self, x, weights,delay=1):
         if len(x.size())<=1:
             x = x.unsqueeze(0)
-        ss = self.encoding2(x, weights)
+        ss = self.encoding1(x, weights)
         s_nexts = []
         ys = []
         i = len(ss)-1
@@ -150,22 +153,24 @@ class Parellel_Renorm_Dynamic(nn.Module):
         s_nexts.append(s_next)
         ys.append(y)
         return ys, ss, s_nexts
-
+    
     def train_back_forward(self, x, weights,delay=1):
         if len(x.size())<=1:
             x = x.unsqueeze(0)
-        ss = self.encoding2(x,weights)
+        ss = self.encoding1(x,weights)
         s_nexts = []
         ys = []
         i = len(ss)-1
         s = ss[i]
         s_next = self.inverse_dynamics_modules[i](s) + s
+        if self.is_random:
+            s_next = s_next + torch.relu(self.sigmas.repeat(s_next.size()[0],1)) * torch.randn(s_next.size(),device=self.device)
         if self.normalized_state:
             s_next = torch.tanh(s_next)
         s_nexts.append(s_next)
         return ys, ss, s_nexts
-
-    def encoding2(self, x, weight):
+        
+    def encoding1(self, x, weight):
         xx = x
         if len(x.size()) > 1:
             if x.size()[1] < self.sym_size:
@@ -188,13 +193,12 @@ class Parellel_Renorm_Dynamic(nn.Module):
         return ys
 
     def decoding(self, s_next, level):
-        #Make the prediction
         y = s_next
         for i in range(level+1)[::-1]:
             flow = self.flows[i]
             end_size = y.shape[1]
             sz = flow.size - end_size
-            if sz>0:
+            if sz > 0:
                 noise = distributions.MultivariateNormal(torch.zeros(sz, device=self.device), torch.eye(sz, device=self.device)).sample((y.size()[0], 1))/3
                 if y.size()[0]>1:
                     noise = noise.squeeze(1)
@@ -204,27 +208,6 @@ class Parellel_Renorm_Dynamic(nn.Module):
             y,_ = flow.g(y)
         return y
     
-    def decoding1(self, s_next, level):
-        y = s_next
-        for i in range(level+1)[::-1]:
-            flow = self.flows[i]
-            end_size = self.latent_size
-            if i < len(self.flows)-1:
-                flow_n = self.flows[i+1]
-                end_size = max(y.size()[1], flow_n.size)
-            sz = flow.size - end_size
-
-            if sz>0:
-                noise = distributions.MultivariateNormal(torch.zeros(sz, device=self.device), torch.eye(sz, device=self.device)).sample((y.size()[0], 1))/3
-                noise = noise.to(self.device)
-                if y.size()[0]>1:
-                    noise = noise.squeeze(1)
-                else:
-                    noise = noise.squeeze(0)
-                y = torch.cat((y, noise), 1)
-            y,_ = flow.g(y)
-        return y
-
     def encoding(self, x):
         xx = x
         if len(x.size()) > 1:
@@ -239,28 +222,8 @@ class Parellel_Renorm_Dynamic(nn.Module):
             if y.size()[1] > flow.size:
                 y = y[:, :flow.size]
             y,_ = flow.f(y)
-            
+
             pdict = dict(self.dynamics_modules[i].named_parameters())
-            lsize = pdict['0.weight'].size()[1]
-            y = y[:, :lsize]
-            ys.append(y)
-        return ys
-    
-    def encoding1(self, x):
-        xx = x
-        if len(x.size()) > 1:
-            if x.size()[1] < self.sym_size:
-                xx = torch.cat((x, torch.zeros([x.size()[0], self.sym_size - x.size()[1]], device=self.device)), 1)
-        else:
-            if x.size()[0] < self.sym_size:
-                xx = torch.cat((x, torch.zeros([self.sym_size - x.size()[0]], device=self.device)), 0)
-        y = xx
-        ys = []
-        for i,flow in enumerate(self.flows):
-            if y.size()[1] > flow.size:
-                y = y[:, :flow.size]
-            y,_ = flow.f(y)
-            pdict = dict(self.inverse_dynamics_modules[i].named_parameters())
             lsize = pdict['0.weight'].size()[1]
             y = y[:, :lsize]
             ys.append(y)
@@ -275,6 +238,7 @@ class Parellel_Renorm_Dynamic(nn.Module):
             sum_loss += loss
         return losses, sum_loss / len(predictions)
     
+
     def loss_weights_general(self, predictions, real, weights, w, indexes,loss_f, forward_func):
         losses = []
         sum_loss = 0
@@ -297,37 +261,15 @@ class Parellel_Renorm_Dynamic(nn.Module):
         return self.loss_weights_general(predictions, real, where_to_weight,w,indexes,loss_f, self.forward)
 
     def loss_weights_back(self, predictions, real, where_to_weight,w, indexes,loss_f):
-        return self.loss_weights_general(predictions, real, where_to_weight,w,indexes, loss_f, self.back_forward)
-    
-    def calc_EIs(self, real, latent_ps, device):
-        sp = self.encoding(real)
-        eis = []
-        sigmass = []
-        scales = []
-        for i,state in enumerate(sp):
-            latent_p = latent_ps[i]
-            flow = self.flows[i]
-            dynamics = self.dynamics_modules[i]
-            dd = dict(dynamics.named_parameters())
-            scale = dd['0.weight'].size()[1]
-            
-            sigmas = torch.sqrt(torch.mean((state-latent_p)**2, 0))
-            print(sigmas.shape)
-            sigmas_matrix = torch.diag(sigmas)
-            ei = approx_ei(scale, scale, sigmas_matrix.data, lambda x:(dynamics(x.unsqueeze(0))+x.unsqueeze(0)), 
-                           num_samples = 1000, L=1, easy=True, device=device)
-            eis.append(ei)
-            sigmass.append(sigmas)
-            scales.append(scale)
-        return eis, sigmass, scales
-    
-    def to_weights(self,log_w, temperature=10):
+        return self.loss_weights_general(predictions, real, where_to_weight,w,indexes, loss_f, self.train_back_forward)
+
+    def to_weights(self,log_w, temperature=10): 
         logsoft = nn.LogSoftmax(dim = 0)
         weights = torch.exp(logsoft(log_w/temperature))
         return weights
     
     def kde_density(self,X):
-        is_cuda = X.is_cuda 
+        is_cuda = X.is_cuda
         ldev = X.device  
         dim = X.size()[1] 
         kde = KernelDensity(kernel='gaussian', bandwidth=0.05, atol=0.2).fit(X.cpu().data.numpy())
@@ -335,7 +277,7 @@ class Parellel_Renorm_Dynamic(nn.Module):
         return log_density, kde
     
     def calc_EIs_kde(self,s,sp,samples,MSE,MSE_raw,L,bigL,weights_id,device,use_cuda='True'):
-        encodes = self.encoding2(sp, weights_id)
+        encodes = self.encoding1(sp, weights_id)
         predicts1, latent1s, latentp1s = self.train_forward(s, weights_id)
         losses_returned_test, loss_test = self.loss(predicts1, sp, MSE)
         eis = []
@@ -363,7 +305,7 @@ class Parellel_Renorm_Dynamic(nn.Module):
             latent1=torch.tensor(latent1)
             log_density, k_model_n = self.kde_density(latent1)
             log_density=torch.tensor(log_density,device=device)
-        log_rho = - scale * torch.log(2.0*torch.from_numpy(np.array(L))) 
+        log_rho = - scale * torch.log(2.0*torch.from_numpy(np.array(L)))  
         logp = log_rho - log_density  
         weights = self.to_weights(logp, temperature=1) * samples
         if use_cuda:
@@ -373,11 +315,28 @@ class Parellel_Renorm_Dynamic(nn.Module):
         sigmas=mse1.mean(axis=0)
         sigmas_matrix = torch.diag(sigmas)
         ei = approx_ei(scale, scale, sigmas_matrix.data, lambda x:(dynamics(x.unsqueeze(0))+x.unsqueeze(0)), 
-                    num_samples = 1000, L=L, easy=True, device=device) 
+                    num_samples = 1000, L=L, easy=True, device=device)  
         eis.append(ei)
         sigmass.append(sigmas)
         weightss.append(weights)
         return eis, sigmass,weightss, loss_test
+
+    def multi_step_prediction(self, x, steps, weights):
+        ss = self.encoding1(x, weights)
+        i = len(ss)-1
+        s = ss[i]
+        temp_s_next_list = []
+        for t in range(steps):
+            s_next = self.dynamics_modules[i](s) + s
+            if self.normalized_state:
+                s_next = torch.tanh(s_next)
+            temp_s_next_list.append(s_next)
+            s = s_next
+        y_list = []
+        for j in range(len(temp_s_next_list)):
+            y = self.decoding(temp_s_next_list[j], i)
+            y_list.append(y)
+        return y_list
 
 def train_and_memorize(train_input,train_target,test_input,test_target,weights_id,folder_name,mice_id,stage,method,device,epoches=5e6+1,hidden_units = 64,scale=1,batch_size =100,train_stage='stage2',version=0):
     if version == 0:
@@ -430,7 +389,7 @@ def train_and_memorize(train_input,train_target,test_input,test_target,weights_i
                 pd.DataFrame(loss_array).to_csv(os.path.join(directory, 'train_loss.csv'),index=None,header=None)
                 pd.DataFrame(loss_array_test).to_csv(os.path.join(directory, 'test_loss.csv'),index=None,header=None)
                 torch.save(net.state_dict(), f'./loc_model_stage1/{folder_name}/{mice_id}/{stage}.pkl')
-    
+
     elif version==1:
         EIs=[]
         CEs=[]
@@ -454,8 +413,8 @@ def train_and_memorize(train_input,train_target,test_input,test_target,weights_i
                              cut_size=2, hidden_units = hidden_units, normalized_state = True, device=device)
         net = net.cuda(device)
         net.load_state_dict(torch.load(f'./loc_model_stage1/{folder_name}/{mice_id}/{stage}.pkl'))
-
-        optimizer = torch.optim.Adam([p for p in net.parameters() if p.requires_grad==True], lr=1e-4)
+        
+        optimizer = torch.optim.Adam([p for p in net.parameters() if p.requires_grad==True], lr=1e-4, weight_decay=1e-5)
         w_forward=torch.ones(train_input.shape[0],device=device)
         w_backward=torch.ones(train_input.shape[0],device=device)
         time_delay = 1
@@ -499,7 +458,7 @@ def train_and_memorize(train_input,train_target,test_input,test_target,weights_i
                     test_state_indexes = torch.multinomial(torch.ones(test_input.shape[0], device=device), num_samples=800, replacement=False) 
                     state_for_EI=test_input[test_state_indexes]
                     state_next_for_EI=test_target[test_state_indexes]
-                
+
                 state_for_EI = state_for_EI.to(device)
                 state_next_for_EI = state_next_for_EI.to(device)
                 eis_kde,sigmass,weights,loss_test = net.calc_EIs_kde(state_for_EI,state_next_for_EI,state_for_EI.shape[0],MAE,MSE_Raw,L,L,weights_id,device)
@@ -513,11 +472,13 @@ def train_and_memorize(train_input,train_target,test_input,test_target,weights_i
                 loss_array_test = np.array(LOSS_test)
                 pd.DataFrame(loss_array).to_csv(os.path.join(directory, 'train_loss%s.csv'%weights_id),index=None,header=None)
                 pd.DataFrame(loss_array_test).to_csv(os.path.join(directory, 'test_loss%s.csv'%weights_id),index=None,header=None)
+                
                 term1_list_array = np.array(term1_list)
                 pd.DataFrame(term1_list_array).to_csv(os.path.join(directory, 'term1_scale%s.csv'%weights_id),index=None,header=None)
-                
+
                 term2_list_array = np.array(term2_list)
                 pd.DataFrame(term2_list_array).to_csv(os.path.join(directory, 'term2_scale%s.csv'%weights_id),index=None,header=None)
                 EI_array = np.array(EIs)
                 pd.DataFrame(EI_array).to_csv(os.path.join(directory, 'EI_scale%s.csv'%weights_id),index=None,header=None)
                 torch.save(net.state_dict(), f'./loc_model_stage2/{folder_name}/{mice_id}/{stage}_scale%s.pkl'%weights_id)
+
