@@ -16,6 +16,23 @@ Schematic overview of the study. (a) Experimental setup with a mouse inhaling an
 
 ## Results
 
+### Mutil-scale causal power
+
+To quantify causal power and emergence, we measured Effective Information ($\mathcal{J}_d$) across scales. Fig. a shows causal power ($\mathcal{J}_d$) increases at higher scales (lower dimensions *d*). Causal emergence ($\Delta \mathcal{J}_d$) peaked at the highest scale (*d*=1) (Fig. b). The study found that across all three stages, the degree of causal emergence ($\Delta \mathcal{J}_d$) peaked at the highest scale (lowest dimension: $d=1$), and the $\Delta \mathcal{J}_1$ of the real data was significantly greater than the Brownian motion baseline, particularly during the awake stage.
+
+![causal_power](images/distribution_of_causal_power.png)
+
+### Emergent dynamics
+
+A one-dimensional macroscopic “conscious variable” is found to summarize all neural activities in the brain which concentrates the strongest causal power, displaying metastable dynamics in wakefulness but collapsing into unstable dynamics under anesthesia (Fig. a). These state-dependent patterns are further supported by saddle-point dynamics in two-dimensional latent spaces, a hallmark of critical brain states linked to conscious processing (Fig. b).
+
+![dynamics](images/dynamics_analyse.png)
+
+### Information integration
+
+Attribution analysis reveals how macro-variables integrate micro-scale information. The coverage ($C_d$), measuring the spatial extent of neural ensembles contributing to a causal variable, increases at higher scales (lower *d*), indicating broader information integration. Coverage is also significantly greater during wakefulness than under anesthesia or recovery. Attribution analysis uncovers a scale-dependent functional dissociation: micro-scale variables predominantly support information integration, whereas macroscopic causal variables are primarily responsible for transmitting causal information.
+
+![info_integrate](images/information_integration.png)
 
 
 ## Usages
