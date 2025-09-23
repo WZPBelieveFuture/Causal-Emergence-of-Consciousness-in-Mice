@@ -25,7 +25,7 @@ A one-dimensional macroscopic “conscious variable” is found to summarize all
 
 ### Mutil-scale causal power
 
-Fig. a and Fig. b show mutil-scale causal power ($\mathcal{J}_d$) and causal emergence ($\Delta \mathcal{J}_d$) across different scales. The study found that across all three stages, the degree of causal emergence ($\Delta \mathcal{J}_d$) peaked at the highest scale (lowest dimension: $d=1$), and $\Delta \mathcal{J}_1$ can distinguish among three states. Besides, rather than being concentrated at a single optimal level, the causal power underlying consciousness is dispersed through a hierarchy of interactions that link micro-level dynamics to macroscopic patterns.
+Fig. a and Fig. b show mutil-scale causal power ($\mathcal{J}_d$) and causal emergence ($\Delta \mathcal{J}_d$) across different scales. The study found that across all three stages, the degree of causal emergence ($\Delta \mathcal{J}_d$) peaked at the highest scale (lowest dimension: $d=1$), and $\Delta \mathcal{J}_1$ can distinguish among three stages. Besides, rather than being concentrated at a single optimal level, the causal power underlying consciousness is dispersed through a hierarchy of interactions that link micro-level dynamics to macroscopic patterns.
 
 ![causal_power](images/distribution_of_causal_power.png)
 
