@@ -9,18 +9,12 @@ For more details, please refer the following paper:
 
 ## Schematic diagram
 
-Schematic overview of the study. (a) Experimental setup with a mouse inhaling anesthetic gas and the corresponding brain region/neuron distribution. (b) Timeline of the three anesthesia stages. (c) Neuronal activity (calcium signals). (d) The NIS+ model learns to predict neural dynamics and maximize effective information. (e) Key outputs include causal effects, information integration strategy and learned dynamics.
+Schematic overview of the study. (a) Experimental setup with a mouse inhaling anesthetic gas and the corresponding brain region/neuron distribution. (b) Timeline of the three anesthesia stages. (c) Neuronal activity (calcium signals). (d) The NIS+ model learns to predict neural dynamics and maximize effective information. (e) Key outputs include causal effects, information integration strategy and learned emergent dynamics.
 
 ![model](images/schematic_diagram.png)
 
 
 ## Results
-
-### Mutil-scale causal power
-
-To quantify causal power and emergence, we measured Effective Information ($\mathcal{J}_d$) across scales. Fig. a shows causal power ($\mathcal{J}_d$) increases at higher scales (lower dimensions *d*). Causal emergence ($\Delta \mathcal{J}_d$) peaked at the highest scale (*d*=1) (Fig. b). The study found that across all three stages, the degree of causal emergence ($\Delta \mathcal{J}_d$) peaked at the highest scale (lowest dimension: $d=1$), and the $\Delta \mathcal{J}_1$ of the real data was significantly greater than the Brownian motion baseline, particularly during the awake stage.
-
-![causal_power](images/distribution_of_causal_power.png)
 
 ### Emergent dynamics
 
@@ -28,9 +22,17 @@ A one-dimensional macroscopic “conscious variable” is found to summarize all
 
 ![dynamics](images/dynamics_analyse.png)
 
+
+### Mutil-scale causal power
+
+Fig. a and Fig. b show mutil-scale causal power ($\mathcal{J}_d$) and causal emergence ($\Delta \mathcal{J}_d$) across different scales. The study found that across all three stages, the degree of causal emergence ($\Delta \mathcal{J}_d$) peaked at the highest scale (lowest dimension: $d=1$), and $\Delta \mathcal{J}_1$ can distinguish among three states. Besides, rather than being concentrated at a single optimal level, the causal power underlying consciousness is dispersed through a hierarchy of interactions that link micro-level dynamics to macroscopic patterns.
+
+![causal_power](images/distribution_of_causal_power.png)
+
+
 ### Information integration
 
-Attribution analysis reveals how macro-variables integrate micro-scale information. The coverage ($C_d$), measuring the spatial extent of neural ensembles contributing to a causal variable, increases at higher scales (lower *d*), indicating broader information integration. Coverage is also significantly greater during wakefulness than under anesthesia or recovery. Attribution analysis uncovers a scale-dependent functional dissociation: micro-scale variables predominantly support information integration, whereas macroscopic causal variables are primarily responsible for transmitting causal information.
+Attribution analysis reveals how macro-variables integrate micro-scale information. The coverage ($C_d$), measuring the spatial extent of neural ensembles contributing to a macroscopic causal variable, increases at higher scales (lower *d*), indicating broader information integration. Coverage is also significantly greater during wakefulness than under anesthesia or recovery. Attribution analysis uncovers a scale-dependent functional dissociation: micro-scale variables predominantly support information integration, whereas macroscopic causal variables are primarily responsible for transmitting causal information.
 
 ![info_integrate](images/information_integration.png)
 
@@ -41,12 +43,12 @@ To enhance computational efficiency, we adopt a multistory framework : (i) paral
 
 **Stage One**
 ```
-bash run_mice_micro_stage1.sh 
+bash run_mice_stage1.sh 
 ```
 
 **Stage Two**
 ```
-bash run_mice_micro_stage2.sh 
+bash run_mice_stage2.sh 
 ```
 
 
