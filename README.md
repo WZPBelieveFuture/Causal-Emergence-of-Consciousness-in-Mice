@@ -11,8 +11,9 @@ For more details, please refer the following paper:
 
 Schematic overview of the study. (a) Experimental setup with a mouse inhaling anesthetic gas and the corresponding brain region/neuron distribution. (b) Timeline of the three anesthesia stages. (c) Neuronal activity (calcium signals). (d) The NIS+ model learns to predict neural dynamics and maximize effective information. (e) Key outputs include causal effects, information integration strategy and learned emergent dynamics.
 
-![model](images/schematic_diagram.png)
-
+<div align="center">
+    <img src="images/schematic_diagram.png" width="300" style="margin: 10px;" alt="schematic_diagram">
+</div>
 
 ## Results
 
