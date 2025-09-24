@@ -2,7 +2,7 @@
 
 ## About
 
-A machine learning framework (NIS+) infers multiscale causal variables, dymamics and information integration mode from cellular-resolution imaging in mouse cortex  across awake, anesthetized, and recovery stages, revealing a top-level "conscious variable" with high emergent complexity that links neural activity to conscious states across scales.
+A machine learning framework (NIS+) infers **multiscale causal variables**, **dymamics** and **information integration mode** from **cellular-resolution** imaging in mouse cortex  across awake, anesthetized, and recovery stages, revealing a top-level **"conscious variable"** with high causal power that links neural activity to conscious states across scales.
 
 For more details, please refer the following paper:
 > Zhipeng Wang, Yingqi Rong, Kaiwei Liu, Mingzhe Yang, Jiang Zhang, Jing He: Causal Emergence of Consciousness through Learned Multiscale Neural Dynamics in Mice. https://arxiv.org/abs/2509.10891
@@ -19,7 +19,7 @@ Schematic overview of the study. (a) Experimental setup with a mouse inhaling an
 
 ### Emergent dynamics
 
-A one-dimensional macroscopic “conscious variable” is found to summarize all neural activities in the brain which concentrates the strongest causal power, displaying metastable dynamics in wakefulness but collapsing into unstable dynamics under anesthesia (Fig. a). These state-dependent patterns are further supported by saddle-point dynamics in two-dimensional latent spaces, a hallmark of critical brain states linked to conscious processing (Fig. b).
+A one-dimensional macroscopic “conscious variable” is found to summarize all neural activities in the brain which concentrates the strongest causal power, displaying **metastable dynamics** in wakefulness but collapsing into unstable dynamics under anesthesia (Fig. a). These state-dependent patterns are further supported by **saddle-point dynamics** in two-dimensional latent spaces, a hallmark of critical brain states linked to conscious processing (Fig. b).
 
 <div align="center">
     <img src="images/dynamics_analyse.png" width="700" alt="dynamics">
@@ -27,15 +27,15 @@ A one-dimensional macroscopic “conscious variable” is found to summarize all
 
 ### Mutil-scale causal power
 
-Fig. a and Fig. b show mutil-scale causal power ($\mathcal{J}_d$) and causal emergence ($\Delta \mathcal{J}_d$) across different scales. The study found that across all three stages, the degree of causal emergence ($\Delta \mathcal{J}_d$) peaked at the highest scale (lowest dimension: $d=1$), and $\Delta \mathcal{J}_1$ can distinguish among three stages. Besides, rather than being concentrated at a single optimal level, the causal power underlying consciousness is dispersed through a hierarchy of interactions that link micro-level dynamics to macroscopic patterns.
+Fig. a and Fig. b show mutil-scale causal power ($\mathcal{J}_d$) and causal emergence ($\Delta \mathcal{J}_d$) across different scales. The study found that across all three stages, the degree of causal emergence ($\Delta \mathcal{J}_d$) peaked at the highest scale (lowest dimension: $d=1$), and $\Delta \mathcal{J}_1$ can distinguish among three stages. Besides, rather than being concentrated at a single optimal level, **the causal power underlying consciousness is dispersed through a hierarchy of interactions** that link micro-level dynamics to macroscopic patterns.
 
 <div align="center">
-    <img src="images/distribution_of_causal_power.png" width="700" alt="causal_power">
+    <img src="images/distribution_of_causal_power.png" width="500" alt="causal_power">
 </div>
 
 ### Information integration
 
-Attribution analysis reveals how macro-variables integrate micro-scale information. The coverage ($C_d$), measuring the spatial extent of neural ensembles contributing to a macroscopic causal variable, increases at higher scales (lower *d*), indicating broader information integration. Coverage is also significantly greater during wakefulness than under anesthesia or recovery. Attribution analysis uncovers a scale-dependent functional dissociation: micro-scale variables predominantly support information integration, whereas macroscopic causal variables are primarily responsible for transmitting causal information.
+Attribution analysis reveals how macro-variables integrate micro-scale information. The coverage ($C_d$), measuring the spatial extent of neural ensembles contributing to a macroscopic causal variable, increases at higher scales (lower *d*), indicating broader information integration. Coverage is also significantly greater during wakefulness than under anesthesia or recovery. Attribution analysis uncovers a **scale-dependent functional dissociation**: micro-scale variables predominantly support information integration, whereas macroscopic causal variables are primarily responsible for transmitting causal information.
 
 <div align="center">
     <img src="images/information_integration.png" width="700" alt="info_integrate">
