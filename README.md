@@ -9,7 +9,7 @@ For more details, please refer the following paper:
 
 ## Schematic diagram
 
-Schematic overview of the study. (a) Experimental setup with a mouse inhaling anesthetic gas and the corresponding brain region/neuron distribution. (b) Timeline of the three anesthesia stages. (c) Neuronal activity (calcium signals). (d) The NIS+ model learns to predict neural dynamics and maximize effective information. (e) Key outputs include causal effects, information integration strategy and learned emergent dynamics.
+Schematic overview of the study. (a) Experimental setup with a mouse inhaling anesthetic gas and the corresponding brain region/neuron distribution. (b) Timeline of the three anesthesia stages. (c) Neuronal activity (calcium signals). (d) The NIS+ model learns to predict neural dynamics and **maximize effective information**. (e) Key outputs include causal effects, information integration strategy and learned emergent dynamics.
 
 <div align="center">
     <img src="images/schematic_diagram.png" width="700" alt="schematic_diagram">
@@ -27,7 +27,7 @@ A one-dimensional macroscopic “conscious variable” is found to summarize all
 
 ### Mutil-scale causal power
 
-Fig. a and Fig. b show mutil-scale causal power ($\mathcal{J}_d$) and causal emergence ($\Delta \mathcal{J}_d$) across different scales. The study found that across all three stages, the degree of causal emergence ($\Delta \mathcal{J}_d$) peaked at the highest scale (lowest dimension: $d=1$), and $\Delta \mathcal{J}_1$ can distinguish among three stages. Besides, rather than being concentrated at a single optimal level, **the causal power underlying consciousness is dispersed through a hierarchy of interactions** that link micro-level dynamics to macroscopic patterns.
+Fig. a and Fig. b show mutil-scale causal power ($\mathcal{J}_d$) and causal emergence ($\Delta \mathcal{J}_d$) across different scales. The study found that across all three stages, the degree of causal emergence ($\Delta \mathcal{J}_d$) peaked at the highest scale (lowest dimension: $d=1$), and $\Delta \mathcal{J}_1$ can distinguish among three stages. Besides, rather than being concentrated at a single optimal level, **the causal power underlying consciousness is dispersed through a hierarchy of interactions that link micro-level dynamics to macroscopic patterns**.
 
 <div align="center">
     <img src="images/distribution_of_causal_power.png" width="500" alt="causal_power">
@@ -43,7 +43,7 @@ Attribution analysis reveals how macro-variables integrate micro-scale informati
 
 ## Usages
 
-To enhance computational efficiency, we adopt a multistory framework : (i) parallel training of all forward dynamics across scales during stage one, using the average microscopic loss of all scales for gradient updates; and (ii) maximizing ($\mathcal{J}_d$) independently for each scale
+To enhance computational efficiency, we adopt a **multistory framework** : (i) parallel training of all forward dynamics across scales during stage one, using the average microscopic loss of all scales for gradient updates; and (ii) maximizing ($\mathcal{J}_d$) independently for each scale
 
 **Stage One**
 ```
