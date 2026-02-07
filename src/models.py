@@ -444,7 +444,7 @@ def train_and_memorize(train_input, train_target, test_input, test_target, scale
                 kde = KernelDensity(kernel=kernel, bandwidth=bandwidth, atol=atol, algorithm=algorithm).fit(latents_kde_1)
                 log_density = torch.tensor(kde.score_samples(latents_kde_1), device=device)
                 dim = len(latents1[scale_id][0]) 
-                log_rho = - dim * torch.log(2.0*torch.from_numpy(np.array(L)))  #均匀分布的概率分布
+                log_rho = - dim * torch.log(2.0*torch.from_numpy(np.array(L)))
                 logp = log_rho - log_density  
                 w_backward = net.to_weights(logp, temperature=1) * train_input.shape[0]
             losses_returned, loss1 = net.loss_weights(predicts, state_next, scale_id, w_forward, state_indexes, MAE_Raw)
