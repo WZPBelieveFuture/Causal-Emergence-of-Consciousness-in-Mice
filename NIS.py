@@ -40,4 +40,4 @@ train_target_data = torch.tensor(train_target, dtype=torch.float32)
 test_input_data = torch.tensor(test_input, dtype=torch.float32)
 test_target_data = torch.tensor(test_target, dtype=torch.float32)
 
-train_and_memorize(train_input_data, train_target_data, test_input_data, test_target_data, args.scale_id, args.ref_scale, args.learning_rate, args.folder_name, args.mice_id, args.stage, 'k-means', device=device, epoches=args.epoch, hidden_units=100, min_dim=1, batch_size=512, train_stage=args.train_stage)
+train_and_memorize(train_input_data, train_target_data, test_input_data, test_target_data, args.scale_id, args.ref_scale, args.learning_rate, args.folder_name, args.mice_id, args.stage, 'k-means', device=device, epoches=args.epoch, hidden_units=50, min_dim=1, batch_size=512, train_stage=args.train_stage)
